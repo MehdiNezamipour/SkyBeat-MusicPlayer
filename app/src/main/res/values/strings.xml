@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SkyBeat</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="library">Library</string>
+    <string name="online_music_service">Online music service</string>
+</resources>
