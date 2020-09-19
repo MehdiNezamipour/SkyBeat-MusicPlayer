@@ -6,6 +6,9 @@
     android:id="@+id/card_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,11 +21,10 @@
             android:id="@+id/imageView_icon_main_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/purple_white_pink_gradient"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src=""
+            tools:src="@drawable/ic_songs"
             />
 
         <TextView
@@ -32,7 +34,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageView_icon_main_menu"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Songs" />
+            android:layout_marginStart="16dp"
+            tools:text="Songs"
+            android:layout_marginLeft="16dp" />
 
         <TextView
             android:id="@+id/textView_number_main_menu"
@@ -41,7 +45,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_editor_absoluteX="200dp" />
+            app:layout_editor_absoluteX="200dp"
+            tools:text="444"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+
+            />
 
         <ImageView
             android:id="@+id/imageView"
@@ -51,7 +60,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_editor_absoluteX="150dp"
-
+            android:src="@drawable/ic_single_array_next"
             />
 
 
