@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardView_main_menu"
+    android:id="@+id/cardView_song"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -14,54 +14,44 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"
-        >
+        android:layout_margin="16dp">
 
-        <ImageView
-            android:id="@+id/imageView_icon_main_menu"
+
+        <TextView
+            android:id="@+id/textView_song_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_songs"
-            />
+            android:textSize="16sp"
+            tools:text="Metallica" />
 
         <TextView
-            android:id="@+id/textView_title_main_menu"
+            android:id="@+id/textView_song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageView_icon_main_menu"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="16dp"
-            tools:text="Songs"
-            android:layout_marginLeft="16dp" />
-
-        <TextView
-            android:id="@+id/textView_number_main_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="10dp"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            app:layout_constraintStart_toStartOf="@+id/textView_song_artist"
+            app:layout_constraintTop_toBottomOf="@id/textView_song_artist"
             app:layout_editor_absoluteX="200dp"
-            tools:text="444"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-
-            />
+            tools:text="nothing else matters"
+            android:layout_marginLeft="20dp" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imageView_more_option_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_editor_absoluteX="150dp"
-            android:src="@drawable/ic_single_array_next"
-            />
+            app:layout_editor_absoluteX="150dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

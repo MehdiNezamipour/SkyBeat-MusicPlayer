@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.mehdi.nezamipour.skybeat.R;
+import org.mehdi.nezamipour.skybeat.controller.activities.AlbumsActivity;
+import org.mehdi.nezamipour.skybeat.controller.activities.ArtistsActivity;
+import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 
 public class MainFragment extends Fragment {
 
@@ -60,7 +64,6 @@ public class MainFragment extends Fragment {
         }
         DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
-        mRecyclerView.stopScroll();
 
     }
 
@@ -105,6 +108,7 @@ public class MainFragment extends Fragment {
 
         private ImageView mImageViewIcon;
         private TextView mTextViewTitle;
+        private CardView mCardView;
 
         //TODO LATER
         private TextView mTextViewNumber;
@@ -114,42 +118,99 @@ public class MainFragment extends Fragment {
             mImageViewIcon = itemView.findViewById(R.id.imageView_icon_main_menu);
             mTextViewTitle = itemView.findViewById(R.id.textView_title_main_menu);
             mTextViewNumber = itemView.findViewById(R.id.textView_number_main_menu);
+            mCardView = itemView.findViewById(R.id.cardView_main_menu);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void bindItem() {
             switch (getAdapterPosition()) {
+                //Playlist fragment
                 case 0:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_playlists));
+                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_playlist_new));
                     mTextViewTitle.setText("Playlists");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO LATER
+                        }
+                    });
                     break;
+                //Songs fragment
                 case 1:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_songs));
                     mTextViewTitle.setText("Songs");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(SongsActivity.newIntent(getContext()));
+                        }
+                    });
                     break;
+                //Albums fragment
                 case 2:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_albums));
                     mTextViewTitle.setText("Albums");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(AlbumsActivity.newIntent(getContext()));
+                        }
+                    });
                     break;
+                //Artist fragment
                 case 3:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_artists));
                     mTextViewTitle.setText("Artists");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(ArtistsActivity.newIntent(getContext()));
+                        }
+                    });
                     break;
+                //Recently fragment
                 case 4:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_recently));
                     mTextViewTitle.setText("Recently played");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO LATER
+                        }
+                    });
                     break;
+                //Setting fragment
                 case 5:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_settings));
                     mTextViewTitle.setText("Settings");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO LATER
+                        }
+                    });
                     break;
+                //Feedback fragment
                 case 6:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_feedback));
                     mTextViewTitle.setText("Feedback");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO LATER
+                        }
+                    });
                     break;
+                //About fragment
                 case 7:
                     mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_info));
                     mTextViewTitle.setText("About");
+                    mCardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO LATER
+                        }
+                    });
                     break;
                 default:
                     break;

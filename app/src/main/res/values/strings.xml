@@ -4,4 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="library">Library</string>
     <string name="online_music_service">Online music service</string>
+    <string name="sky_beat">Sky Beat</string>
+    <string name="music">Music</string>
 </resources>

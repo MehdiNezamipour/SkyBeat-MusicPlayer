@@ -5,17 +5,18 @@ import android.content.Intent;
 
 import androidx.fragment.app.Fragment;
 
-import org.mehdi.nezamipour.skybeat.controller.fragments.MainFragment;
+import org.mehdi.nezamipour.skybeat.controller.fragments.AlbumsFragment;
 
-public class MainActivity extends SingleFragmentActivity {
+public class AlbumsActivity extends SingleFragmentActivity {
 
     public static Intent newIntent(Context context) {
-        return new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, AlbumsActivity.class);
+        return intent;
     }
 
 
     @Override
     protected Fragment createFragment() {
-        return MainFragment.newInstance();
+        return AlbumsFragment.newInstance();
     }
 }
