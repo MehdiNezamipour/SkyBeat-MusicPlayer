@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.activities.AlbumsActivity;
 import org.mehdi.nezamipour.skybeat.controller.activities.ArtistsActivity;
 import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 public class MainFragment extends Fragment {
 
@@ -126,8 +128,8 @@ public class MainFragment extends Fragment {
             switch (getAdapterPosition()) {
                 //Playlist fragment
                 case 0:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_playlist_new));
-                    mTextViewTitle.setText("Playlists");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_playlist_new));
+                    mTextViewTitle.setText(R.string.playlists);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -137,8 +139,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Songs fragment
                 case 1:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_songs));
-                    mTextViewTitle.setText("Songs");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_songs));
+                    mTextViewTitle.setText(R.string.songs);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -148,8 +150,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Albums fragment
                 case 2:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_albums));
-                    mTextViewTitle.setText("Albums");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_albums));
+                    mTextViewTitle.setText(R.string.albums);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -159,8 +161,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Artist fragment
                 case 3:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_artists));
-                    mTextViewTitle.setText("Artists");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_artists));
+                    mTextViewTitle.setText(R.string.artists);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -170,8 +172,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Recently fragment
                 case 4:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_recently));
-                    mTextViewTitle.setText("Recently played");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_recently));
+                    mTextViewTitle.setText(R.string.recently_played);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -181,8 +183,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Setting fragment
                 case 5:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_settings));
-                    mTextViewTitle.setText("Settings");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_settings));
+                    mTextViewTitle.setText(R.string.settings);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -192,8 +194,8 @@ public class MainFragment extends Fragment {
                     break;
                 //Feedback fragment
                 case 6:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_feedback));
-                    mTextViewTitle.setText("Feedback");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_feedback));
+                    mTextViewTitle.setText(R.string.feedback);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -203,8 +205,8 @@ public class MainFragment extends Fragment {
                     break;
                 //About fragment
                 case 7:
-                    mImageViewIcon.setImageDrawable(getActivity().getDrawable(R.drawable.ic_info));
-                    mTextViewTitle.setText("About");
+                    mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_info));
+                    mTextViewTitle.setText(R.string.about);
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

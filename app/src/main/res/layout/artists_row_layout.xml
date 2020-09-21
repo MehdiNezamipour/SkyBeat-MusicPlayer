@@ -21,19 +21,30 @@
             android:id="@+id/textView_artist_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:layout_marginLeft="16sp"
-            android:textSize="16sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:textSize="14sp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView_artist_image"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Never mind" />
 
+        <TextView
+            android:id="@+id/textView_number_of_song_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_1_song"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/textView_artist_name"
+            app:layout_constraintTop_toBottomOf="@id/textView_artist_name"
+            app:layout_editor_absoluteX="60dp" />
+
         <ImageView
             android:id="@+id/imageView_artist_image"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:background="@drawable/circular_shape_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

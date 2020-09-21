@@ -2,16 +2,31 @@ package org.mehdi.nezamipour.skybeat.controller.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.material.card.MaterialCardView;
 
 import org.mehdi.nezamipour.skybeat.R;
+import org.mehdi.nezamipour.skybeat.models.Artist;
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
+
+import java.util.ArrayList;
 
 public class ArtistsFragment extends Fragment {
 
+    private RecyclerView mRecyclerViewArtist;
+    private ArtistAdapter mAdapter;
+    private ArrayList<Artist> mArtists;
 
     public ArtistsFragment() {
         // Required empty public constructor
@@ -27,6 +42,7 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mArtists = new ArrayList<>();
     }
 
     @Override
@@ -34,5 +50,96 @@ public class ArtistsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_artists, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        findViews(view);
+
+        mArtists = AudioUtils.loadArtist(getContext());
+        if (mAdapter == null) {
+            mAdapter = new ArtistAdapter(mArtists);
+            mRecyclerViewArtist.setAdapter(mAdapter);
+        } else {
+            mAdapter.setArtists(mArtists);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        mRecyclerViewArtist.addItemDecoration(itemDecor);
+    }
+
+    private void findViews(View view) {
+        mRecyclerViewArtist = view.findViewById(R.id.recyclerView_artists);
+    }
+
+
+    public class ArtistAdapter extends RecyclerView.Adapter<ArtistHolder> {
+
+        ArrayList<Artist> mArtists;
+
+        public ArtistAdapter(ArrayList<Artist> artists) {
+            mArtists = artists;
+        }
+
+        public void setArtists(ArrayList<Artist> artists) {
+            mArtists = artists;
+        }
+
+        @NonNull
+        @Override
+        public ArtistHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View view = inflater.inflate(R.layout.artists_row_layout, viewGroup, false);
+            return new ArtistHolder(view);
+
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ArtistHolder artistHolder, int position) {
+            artistHolder.bindArtist(mArtists.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mArtists.size();
+        }
+    }
+
+    public class ArtistHolder extends RecyclerView.ViewHolder {
+
+        private MaterialCardView mCardViewArtist;
+        private Artist mArtist;
+        private TextView mTextViewArtistName;
+        private TextView mTextViewNumberOfSongs;
+        private ImageView mImageViewArtistImage;
+
+
+        public ArtistHolder(@NonNull View itemView) {
+            super(itemView);
+            mTextViewArtistName = itemView.findViewById(R.id.textView_artist_name);
+            mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_number_of_song_artist);
+            mImageViewArtistImage = itemView.findViewById(R.id.imageView_artist_image);
+            mCardViewArtist = itemView.findViewById(R.id.cardView_artist);
+
+            mCardViewArtist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO : open songsFragment with new data (songs of artist clicked)
+                }
+            });
+
+        }
+
+        public void bindArtist(Artist artist) {
+            mArtist = artist;
+            mTextViewArtistName.setText(artist.getName());
+            if (artist.getNumberOfSongs() > 1)
+                mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs, String.valueOf(artist.getNumberOfSongs())));
+
+            //TODO
+            //mImageViewArtistImage.setImageDrawable();
+        }
     }
 }
