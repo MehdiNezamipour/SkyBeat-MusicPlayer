@@ -1,17 +1,11 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,25 +16,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 
 import org.mehdi.nezamipour.skybeat.R;
-import org.mehdi.nezamipour.skybeat.controller.services.MediaPlayerService;
+import org.mehdi.nezamipour.skybeat.controller.activities.PlaySongActivity;
+import org.mehdi.nezamipour.skybeat.models.Album;
+import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
+import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
-import org.mehdi.nezamipour.skybeat.utils.StorageUtils;
 
 import java.util.ArrayList;
 
 
 public class SongsFragment extends Fragment {
 
-
-    public static final String BUNDLE_SERVICE_STATE = "org.mehdi.nezamipour.skybeat.ServiceState";
-    public static final String Broadcast_PLAY_NEW_AUDIO = "org.mehdi.nezamipour.skybeat.PlayNewAudio";
-    private MediaPlayerService mPlayer;
-    boolean mServiceBound = false;
-
+    public static final String ARG_ALBUM = "album";
+    public static final String ARG_ARTIST = "artist";
+    public static final String BUNDLE_ALBUM = "album";
+    public static final String BUNDLE_ARTIST = "artist";
+    private AudioRepository mRepository;
     private RecyclerView mRecyclerViewSong;
     private SongsAdapter mAdapter;
-    private ArrayList<Audio> mAudio;
+
+    private ArrayList<Audio> mAudios;
+    private Album mAlbum;
+    private Artist mArtist;
 
     public SongsFragment() {
         // Required empty public constructor
@@ -53,33 +51,45 @@ public class SongsFragment extends Fragment {
         return fragment;
     }
 
-    //Binding this Client to the AudioPlayer Service
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    public static SongsFragment newInstance(Album album) {
+        SongsFragment fragment = new SongsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_ALBUM, album);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
-            mPlayer = binder.getService();
-            mServiceBound = true;
-            Toast.makeText(getActivity(), "Service Bound", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mServiceBound = false;
-        }
-    };
+    public static SongsFragment newInstance(Artist artist) {
+        SongsFragment fragment = new SongsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_ARTIST, artist);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mServiceBound = savedInstanceState.getBoolean(BUNDLE_SERVICE_STATE);
+            mAlbum = (Album) savedInstanceState.getSerializable(BUNDLE_ALBUM);
+            mArtist = (Artist) savedInstanceState.getSerializable(BUNDLE_ARTIST);
         }
-        mAudio = new ArrayList<>();
+        if (getArguments() != null) {
+            mAlbum = (Album) getArguments().getSerializable(ARG_ALBUM);
+            mArtist = (Artist) getArguments().getSerializable(ARG_ARTIST);
+        }
+        mRepository = AudioRepository.getInstance(getContext());
+        mAudios = new ArrayList<>();
+        if (mAlbum != null) {
+            mAudios = AudioUtils.extractSongsOfAlbum(getContext(), mAlbum);
+        } else if (mArtist != null) {
+            mAudios = AudioUtils.extractSongsOfArtist(getContext(), mArtist);
+        } else {
+            mAudios = mRepository.getAudioList();
+        }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,17 +102,15 @@ public class SongsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-        //TEST
-        //playAudio("https://upload.wikimedia.org/wikipedia/commons/6/6c/Grieg_Lyric_Pieces_Kobold.ogg");
 
-        mAudio = AudioUtils.loadAudio(getContext());
+
         if (mAdapter == null) {
-            mAdapter = new SongsAdapter(mAudio);
+            mAdapter = new SongsAdapter(mAudios);
             mRecyclerViewSong.setAdapter(mAdapter);
         }
         // set audio list
         else {
-            mAdapter.setAudio(mAudio);
+            mAdapter.setAudio(mAudios);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -117,40 +125,9 @@ public class SongsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(BUNDLE_SERVICE_STATE, mServiceBound);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mServiceBound) {
-            getActivity().unbindService(serviceConnection);
-            //service is active
-            mPlayer.stopSelf();
-        }
-    }
-
-    private void playAudio(int audioIndex) {
-        //Check is service is active
-        StorageUtils storage = new StorageUtils(getActivity().getApplicationContext());
-        if (!mServiceBound) {
-            //Store Serializable audioList to SharedPreferences
-            storage.storeAudio(mAudio);
-            storage.storeAudioIndex(audioIndex);
-
-            Intent playerIntent = new Intent(getActivity(), MediaPlayerService.class);
-            getActivity().startService(playerIntent);
-            getActivity().bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            //Store the new audioIndex to SharedPreferences
-            storage.storeAudioIndex(audioIndex);
-
-            //Service is active
-            //Send a broadcast to the service -> PLAY_NEW_AUDIO
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            getActivity().sendBroadcast(broadcastIntent);
-        }
+        savedInstanceState.putSerializable(BUNDLE_ALBUM, mAlbum);
+        savedInstanceState.putSerializable(BUNDLE_ARTIST, mArtist);
     }
 
 
@@ -205,18 +182,22 @@ public class SongsFragment extends Fragment {
             mImageViewMoreOptionSong.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO : open a dialog for more option for song like share ,add to playlist and etc...
+                    //TODO LATER : open a dialog for more option for song like share ,add to playlist and etc...
                 }
             });
             mCardViewSong.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO for open PlaySongFragment and play the song
+                    if (mAlbum != null)
+                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition(), mAlbum));
+                    else if (mArtist != null)
+                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition(), mArtist));
+                    else
+                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition()));
                 }
             });
         }
 
-        //TODO bindSong method
         public void bindSong(Audio audio) {
             mAudio = audio;
             mTextViewSongTitle.setText(mAudio.getTitle());

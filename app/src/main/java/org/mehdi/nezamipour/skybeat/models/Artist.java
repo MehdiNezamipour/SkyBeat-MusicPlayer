@@ -1,28 +1,29 @@
 package org.mehdi.nezamipour.skybeat.models;
 
-public class Artist {
+import java.io.Serializable;
+
+public class Artist implements Serializable {
+
+    private String mArtistId;
     private String mName;
     private int mNumberOfSongs;
 
 
-    public Artist(String name, int numberOfSongs) {
+    public Artist(String name, int numberOfSongs, String artistId) {
         mName = name;
         mNumberOfSongs = numberOfSongs;
+        mArtistId = artistId;
+    }
+
+    public String getArtistId() {
+        return mArtistId;
     }
 
     public String getName() {
         return mName;
     }
 
-    public void setName(String name) {
-        mName = name;
-    }
-
     public int getNumberOfSongs() {
         return mNumberOfSongs;
-    }
-
-    public void setNumberOfSongs(int numberOfSongs) {
-        mNumberOfSongs = numberOfSongs;
     }
 }

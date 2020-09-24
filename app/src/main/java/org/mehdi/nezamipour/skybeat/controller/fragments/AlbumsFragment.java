@@ -1,6 +1,13 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,22 +15,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.google.android.material.card.MaterialCardView;
 
 import org.mehdi.nezamipour.skybeat.R;
+import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 import org.mehdi.nezamipour.skybeat.models.Album;
-import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
+import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 
 import java.util.ArrayList;
 
 public class AlbumsFragment extends Fragment {
 
+    private AudioRepository mRepository;
     private RecyclerView mRecyclerViewAlbum;
     private AlbumsAdapter mAdapter;
     private ArrayList<Album> mAlbums;
@@ -43,6 +46,8 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAlbums = new ArrayList<>();
+        mRepository = AudioRepository.getInstance(getContext());
+
     }
 
     @Override
@@ -56,7 +61,7 @@ public class AlbumsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-        mAlbums = AudioUtils.loadAlbum(getContext());
+        mAlbums = mRepository.getAlbumList();
         if (mAdapter == null) {
             mAdapter = new AlbumsAdapter(mAlbums);
             mRecyclerViewAlbum.setAdapter(mAdapter);
@@ -109,20 +114,20 @@ public class AlbumsFragment extends Fragment {
         private Album mAlbum;
         private MaterialCardView mCardViewAlbum;
         private TextView mTextViewAlbumTitle;
-        private TextView mTextViewNumberOfSongs;
+        //private TextView mTextViewNumberOfSongs;
         private ImageView mImageViewAlbumImage;
 
         public AlbumHolder(@NonNull View itemView) {
             super(itemView);
             mTextViewAlbumTitle = itemView.findViewById(R.id.textView_album_title);
-            mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_songs_of_album);
+            //mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_songs_of_album);
             mImageViewAlbumImage = itemView.findViewById(R.id.imageView_album_image);
             mCardViewAlbum = itemView.findViewById(R.id.cardView_album);
 
             mCardViewAlbum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO : open songsFragment with new data (songs of album clicked)
+                    startActivity(SongsActivity.newIntent(getContext(), mAlbum));
                 }
             });
         }
@@ -130,12 +135,15 @@ public class AlbumsFragment extends Fragment {
         public void bindAlbum(Album album) {
             mAlbum = album;
             mTextViewAlbumTitle.setText(album.getTitle());
-            if (album.getSongsNumber() > 1)
+    /*        if (album.getSongsNumber() > 1)
                 mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs,
-                        String.valueOf(mAlbum.getSongsNumber())));
-            //TODO
-          /*  mImageViewAlbumImage.setImageDrawable();
-            mImageViewAlbumImage.setImageBitmap();*/
+                        String.valueOf(mAlbum.getSongsNumber())));*/
+
+            Bitmap bm = BitmapFactory.decodeFile(mAlbum.getAlbumArt());
+            if (bm != null)
+                mImageViewAlbumImage.setImageBitmap(bm);
+            else
+                mImageViewAlbumImage.setImageResource(R.drawable.no_image_2);
         }
     }
 

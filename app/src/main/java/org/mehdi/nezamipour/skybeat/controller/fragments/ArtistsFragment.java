@@ -1,6 +1,11 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,22 +13,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.google.android.material.card.MaterialCardView;
 
 import org.mehdi.nezamipour.skybeat.R;
+import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 import org.mehdi.nezamipour.skybeat.models.Artist;
-import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
+import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 
 import java.util.ArrayList;
 
 public class ArtistsFragment extends Fragment {
 
+    private AudioRepository mRepository;
     private RecyclerView mRecyclerViewArtist;
     private ArtistAdapter mAdapter;
     private ArrayList<Artist> mArtists;
@@ -43,6 +44,7 @@ public class ArtistsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mArtists = new ArrayList<>();
+        mRepository = AudioRepository.getInstance(getContext());
     }
 
     @Override
@@ -57,7 +59,7 @@ public class ArtistsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
 
-        mArtists = AudioUtils.loadArtist(getContext());
+        mArtists = mRepository.getArtistList();
         if (mAdapter == null) {
             mAdapter = new ArtistAdapter(mArtists);
             mRecyclerViewArtist.setAdapter(mAdapter);
@@ -126,7 +128,7 @@ public class ArtistsFragment extends Fragment {
             mCardViewArtist.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO : open songsFragment with new data (songs of artist clicked)
+                    startActivity(SongsActivity.newIntent(getContext(), mArtist));
                 }
             });
 
