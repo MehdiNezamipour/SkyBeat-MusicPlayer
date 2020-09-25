@@ -28,8 +28,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
-    public static final String EXTRA_ALBUM = "album";
-    public static final String EXTRA_ARTIST = "artist";
+    public static final String EXTRA_ALBUM = " org.mehdi.nezamipour.skybeat.album";
+    public static final String EXTRA_ARTIST = " org.mehdi.nezamipour.skybeat.artist";
+    public static final String EXTRA_AUDIO_INDEX = "audioIndex";
+
+    private AudioRepository mRepository;
+    private final IBinder mBinder = new LocalBinder();
+
+    private int mAudioIndex = -1;
+    private int mResumePosition;
+    private ArrayList<Audio> mAudioList;
+    private MediaPlayer mMediaPlayer = new MediaPlayer();
+    private AudioManager mAudioManager;
+    private Audio mActiveAudio;
+    private Album mAlbum;
+    private Artist mArtist;
+
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MediaPlayerService.class);
@@ -48,31 +62,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
 
-    public static final String EXTRA_AUDIO_INDEX = "audioIndex";
-
-    private AudioRepository mRepository;
-    private final IBinder mBinder = new LocalBinder();
-
-    private int mAudioIndex = -1;
-    private int mResumePosition;
-    private ArrayList<Audio> mAudioList;
-
-    private MediaPlayer mMediaPlayer;
-    private AudioManager mAudioManager;
-    private Audio mActiveAudio;
-    private Album mAlbum;
-    private Artist mArtist;
-
-
     public MediaPlayerService() {
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        registerBecomingNoisyReceiver();
-        registerPlayNewAudio();
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -85,6 +77,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public int onStartCommand(Intent intent, int flags, int startId) {
         mRepository = AudioRepository.getInstance(getApplicationContext());
         mAudioList = mRepository.getAudioList();
+
 
         try {
             mAudioIndex = intent.getIntExtra(EXTRA_AUDIO_INDEX, -1);
@@ -100,7 +93,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             if (mAudioIndex != -1 && mAudioIndex < mAudioList.size()) {
 
                 mActiveAudio = mAudioList.get(mAudioIndex);
-                initMediaPlayer();
+                if (mMediaPlayer.isPlaying()){
+                    mMediaPlayer.stop();
+                }
+                    initMediaPlayer();
             } else {
                 stopSelf();
             }
@@ -123,13 +119,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             mMediaPlayer.release();
         }
         removeAudioFocus();
-        unregisterReceiver(becomingNoisyReceiver);
-        unregisterReceiver(playNewAudio);
-
     }
 
     private void initMediaPlayer() {
-        mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnBufferingUpdateListener(this);
@@ -139,6 +131,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             // Set the data source to the mediaFile location
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
             mMediaPlayer.setDataSource(mActiveAudio.getData());
         } catch (IOException e) {
             e.printStackTrace();
@@ -289,40 +284,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             return MediaPlayerService.this;
         }
 
-    }
-
-
-    private BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            pauseMedia();
-        }
-    };
-
-    private void registerBecomingNoisyReceiver() {
-        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        registerReceiver(becomingNoisyReceiver, intentFilter);
-    }
-
-
-    private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mAudioIndex != -1 && mAudioIndex < mAudioList.size()) {
-                mActiveAudio = mAudioList.get(mAudioIndex);
-            } else {
-                stopSelf();
-            }
-            stopMedia();
-            mMediaPlayer.reset();
-            initMediaPlayer();
-        }
-    };
-
-
-    private void registerPlayNewAudio() {
-        IntentFilter filter = new IntentFilter(PlaySongFragment.Broadcast_PLAY_NEW_AUDIO);
-        registerReceiver(playNewAudio, filter);
     }
 
 

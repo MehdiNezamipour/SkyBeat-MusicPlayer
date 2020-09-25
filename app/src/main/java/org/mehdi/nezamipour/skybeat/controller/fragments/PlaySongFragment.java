@@ -64,6 +64,7 @@ public class PlaySongFragment extends Fragment {
     private ImageButton mButtonPrevious;
     private ImageButton mButtonPlayOrStop;
     private ImageButton mButtonNext;
+    private ImageButton mButtonOrderedOfPlay;
     private Album mAlbum;
     private Artist mArtist;
 
@@ -144,7 +145,7 @@ public class PlaySongFragment extends Fragment {
             mAudioList = AudioUtils.extractSongsOfAlbum(getContext(), mAlbum);
             playAudio(mAudioIndex, mAlbum);
         } else if (mArtist != null) {
-            //TODO
+            mAudioList = AudioUtils.extractSongsOfArtist(getContext(), mArtist);
             playAudio(mAudioIndex, mArtist);
         } else {
             mAudioList = mRepository.getAudioList();
@@ -270,6 +271,7 @@ public class PlaySongFragment extends Fragment {
         mButtonPrevious = view.findViewById(R.id.imageButton_previous);
         mButtonPlayOrStop = view.findViewById(R.id.imageButton_play_or_stop_song);
         mButtonNext = view.findViewById(R.id.imageButton_next);
+        mButtonOrderedOfPlay = view.findViewById(R.id.buttn_ordered_of_play);
 
     }
 
@@ -366,7 +368,7 @@ public class PlaySongFragment extends Fragment {
         if (art != null) {
             mCircleImageViewSongImage.setImageBitmap(BitmapFactory.decodeByteArray(art, 0, art.length));
         } else {
-            mCircleImageViewSongImage.setImageResource(R.drawable.no_image_2);
+            mCircleImageViewSongImage.setImageResource(R.drawable.pic);
         }
     }
 

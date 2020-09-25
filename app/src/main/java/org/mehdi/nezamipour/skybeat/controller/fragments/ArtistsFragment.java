@@ -121,7 +121,7 @@ public class ArtistsFragment extends Fragment {
         public ArtistHolder(@NonNull View itemView) {
             super(itemView);
             mTextViewArtistName = itemView.findViewById(R.id.textView_artist_name);
-            mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_number_of_song_artist);
+            //mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_number_of_song_artist);
             mImageViewArtistImage = itemView.findViewById(R.id.imageView_artist_image);
             mCardViewArtist = itemView.findViewById(R.id.cardView_artist);
 
@@ -137,11 +137,10 @@ public class ArtistsFragment extends Fragment {
         public void bindArtist(Artist artist) {
             mArtist = artist;
             mTextViewArtistName.setText(artist.getName());
-            if (artist.getNumberOfSongs() > 1)
-                mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs, String.valueOf(artist.getNumberOfSongs())));
-
-            //TODO
-            //mImageViewArtistImage.setImageDrawable();
+      /*      if (artist.getNumberOfSongs() > 1)
+                mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs, String.valueOf(artist.getNumberOfSongs())));*/
+      //TODO
+      mImageViewArtistImage.setImageResource(R.drawable.no_image_2);
         }
     }
 }

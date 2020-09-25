@@ -4,7 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+
+import androidx.annotation.RequiresApi;
 
 import org.mehdi.nezamipour.skybeat.controller.services.MediaPlayerService;
 import org.mehdi.nezamipour.skybeat.models.Album;
@@ -128,6 +131,17 @@ public class AudioUtils {
             }
         }
         return songsOfArtist;
+    }
+
+    public static ArrayList<String> artistSongsData(Context context, Artist artist) {
+        AudioRepository audioRepository = AudioRepository.getInstance(context);
+        ArrayList<Audio> audios = audioRepository.getAudioList();
+        ArrayList<String> data = new ArrayList<>();
+        for (Audio audio : audios) {
+            if (audio.getArtistId().equals(artist.getArtistId()))
+                data.add(audio.getData());
+        }
+        return data;
     }
 
 }
