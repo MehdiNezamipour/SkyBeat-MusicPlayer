@@ -9,7 +9,6 @@ import android.provider.MediaStore;
 import org.mehdi.nezamipour.skybeat.models.Album;
 import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
-import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 
 import java.util.ArrayList;
 
@@ -108,9 +107,8 @@ public class AudioUtils {
 
 
     public static ArrayList<Audio> extractSongsOfAlbum(Context context, String albumId) {
-        AudioRepository audioRepository = AudioRepository.getInstance(context);
         ArrayList<Audio> songsOfAlbum = new ArrayList<>();
-        for (Audio audio : audioRepository.getAudioList()) {
+        for (Audio audio : AudioUtils.loadAudio(context)) {
             if (audio.getAlbumId().equals(albumId)) {
                 songsOfAlbum.add(audio);
             }
@@ -119,9 +117,8 @@ public class AudioUtils {
     }
 
     public static ArrayList<Audio> extractSongsOfArtist(Context context, String artistId) {
-        AudioRepository audioRepository = AudioRepository.getInstance(context);
         ArrayList<Audio> songsOfArtist = new ArrayList<>();
-        for (Audio audio : audioRepository.getAudioList()) {
+        for (Audio audio : AudioUtils.loadAudio(context)) {
             if (audio.getArtistId().equals(artistId)) {
                 songsOfArtist.add(audio);
             }

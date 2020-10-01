@@ -19,6 +19,7 @@ import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.util.ArrayList;
 
@@ -44,7 +45,7 @@ public class ArtistsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mArtists = new ArrayList<>();
-        mRepository = AudioRepository.getInstance(getContext());
+        mRepository = AudioRepository.getInstance();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ArtistsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
 
-        mArtists = mRepository.getArtistList();
+        mArtists = AudioUtils.loadArtist(getContext());
         if (mAdapter == null) {
             mAdapter = new ArtistAdapter(mArtists);
             mRecyclerViewArtist.setAdapter(mAdapter);

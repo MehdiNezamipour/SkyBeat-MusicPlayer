@@ -1,11 +1,11 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,15 +26,14 @@ import androidx.fragment.app.Fragment;
 
 import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.services.MediaPlayerService;
+import org.mehdi.nezamipour.skybeat.enums.OrderOfPlay;
 import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class PlaySongFragment extends Fragment {
@@ -90,7 +88,6 @@ public class PlaySongFragment extends Fragment {
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             mService = binder.getService();
             mBoundState = true;
-            Toast.makeText(getActivity(), "Service Bound", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -102,7 +99,7 @@ public class PlaySongFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AudioRepository repository = AudioRepository.getInstance(getContext());
+        AudioRepository repository = AudioRepository.getInstance();
         if (getArguments() != null) {
             mAudioIndex = getArguments().getInt(ARG_AUDIO_INDEX);
         }
@@ -190,7 +187,7 @@ public class PlaySongFragment extends Fragment {
         mButtonPrevious = view.findViewById(R.id.imageButton_previous);
         mButtonPlayOrStop = view.findViewById(R.id.imageButton_play_or_stop_song);
         mButtonNext = view.findViewById(R.id.imageButton_next);
-        mButtonOrderedOfPlay = view.findViewById(R.id.buttn_ordered_of_play);
+        mButtonOrderedOfPlay = view.findViewById(R.id.button_ordered_of_play);
 
     }
 
@@ -234,14 +231,11 @@ public class PlaySongFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     mService.skipToPrevious();
+                    mAudioIndex = mService.getAudioIndex();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (mAudioIndex == 0) {
-                    mAudioIndex = mAudioList.size() - 1;
-                } else {
-                    --mAudioIndex;
-                }
+
                 updateUI();
             }
         });
@@ -250,14 +244,11 @@ public class PlaySongFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     mService.skipToNext();
+                    mAudioIndex = mService.getAudioIndex();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (mAudioIndex == mAudioList.size() - 1) {
-                    mAudioIndex = 0;
-                } else {
-                    ++mAudioIndex;
-                }
+
                 updateUI();
             }
         });
@@ -291,6 +282,27 @@ public class PlaySongFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+
+        mButtonOrderedOfPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Drawable currentDrawable = mButtonOrderedOfPlay.getDrawable();
+                Drawable shuffle = getActivity().getResources().getDrawable(R.drawable.ic_shuffle_black);
+                Drawable repeatList = getActivity().getResources().getDrawable(R.drawable.ic_repeat_list_black);
+                Drawable repeatOne = getActivity().getResources().getDrawable(R.drawable.ic_repeat_one_black);
+
+                if (currentDrawable.getConstantState().equals(repeatList.getConstantState())) {
+                    mButtonOrderedOfPlay.setImageDrawable(repeatOne);
+                    mService.setOrderOfPlay(OrderOfPlay.REPEAT_ONE);
+                } else if (currentDrawable.getConstantState().equals(repeatOne.getConstantState())) {
+                    mButtonOrderedOfPlay.setImageDrawable(shuffle);
+                    mService.setOrderOfPlay(OrderOfPlay.SHUFFLE);
+                } else if (currentDrawable.getConstantState().equals(shuffle.getConstantState())) {
+                    mButtonOrderedOfPlay.setImageDrawable(repeatList);
+                    mService.setOrderOfPlay(OrderOfPlay.REPEAT_LIST);
+                }
             }
         });
 

@@ -11,11 +11,14 @@ import android.os.IBinder;
 
 import androidx.annotation.RequiresApi;
 
+import org.mehdi.nezamipour.skybeat.enums.OrderOfPlay;
 import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener,
@@ -26,6 +29,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     private final IBinder mBinder = new LocalBinder();
 
+    // default order
+    private OrderOfPlay mOrderOfPlay = OrderOfPlay.REPEAT_LIST;
+
     private int mAudioIndex = -1;
     private int mResumePosition;
     private ArrayList<Audio> mAudioList;
@@ -33,6 +39,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private AudioManager mAudioManager;
     private Audio mActiveAudio;
 
+    public int getAudioIndex() {
+        return mAudioIndex;
+    }
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MediaPlayerService.class);
@@ -42,6 +51,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         // Required empty public constructor
     }
 
+    public OrderOfPlay getOrderOfPlay() {
+        return mOrderOfPlay;
+    }
+
+    public void setOrderOfPlay(OrderOfPlay orderOfPlay) {
+        mOrderOfPlay = orderOfPlay;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -52,8 +68,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        AudioRepository repository = AudioRepository.getInstance(getApplicationContext());
-        mAudioList = repository.getAudioList();
+        AudioRepository repository = AudioRepository.getInstance();
+        mAudioList = AudioUtils.loadAudio(getApplicationContext());
         mAudioIndex = intent.getIntExtra(EXTRA_AUDIO_INDEX, -1);
         mAudioList = (ArrayList<Audio>) repository.getAudios();
 
@@ -107,24 +123,44 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
 
+    private void randomAudio() {
+        int random = new Random().nextInt((mAudioList.size() - 1) + 1);
+        while (random == mAudioIndex) {
+            random = new Random().nextInt((mAudioList.size() - 1) + 1);
+        }
+        mAudioIndex = random;
+        mActiveAudio = mAudioList.get(random);
+    }
+
     //Handle actions of media player public methods that client use this
     public void skipToNext() throws IOException {
-        if (mAudioIndex == mAudioList.size() - 1) {
-            mAudioIndex = 0;
-            mActiveAudio = mAudioList.get(mAudioIndex);
-        } else {
-            mActiveAudio = mAudioList.get(++mAudioIndex);
+        if (mOrderOfPlay == OrderOfPlay.REPEAT_LIST) {
+            if (mAudioIndex == mAudioList.size() - 1) {
+                mAudioIndex = 0;
+                mActiveAudio = mAudioList.get(mAudioIndex);
+            } else {
+                mActiveAudio = mAudioList.get(++mAudioIndex);
+            }
+        } else if (mOrderOfPlay == OrderOfPlay.SHUFFLE) {
+            randomAudio();
         }
+
         initMediaPlayer();
     }
 
+
     public void skipToPrevious() throws IOException {
-        if (mAudioIndex == 0) {
-            mAudioIndex = mAudioList.size() - 1;
-            mActiveAudio = mAudioList.get(mAudioIndex);
-        } else {
-            mActiveAudio = mAudioList.get(--mAudioIndex);
+        if (mOrderOfPlay == OrderOfPlay.REPEAT_LIST) {
+            if (mAudioIndex == 0) {
+                mAudioIndex = mAudioList.size() - 1;
+                mActiveAudio = mAudioList.get(mAudioIndex);
+            } else {
+                mActiveAudio = mAudioList.get(--mAudioIndex);
+            }
+        } else if (mOrderOfPlay == OrderOfPlay.SHUFFLE) {
+            randomAudio();
         }
+
         initMediaPlayer();
     }
 
@@ -235,6 +271,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCompletion(MediaPlayer mp) {
         try {
             skipToNext();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

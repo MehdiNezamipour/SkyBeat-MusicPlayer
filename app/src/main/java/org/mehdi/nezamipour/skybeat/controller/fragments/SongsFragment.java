@@ -45,7 +45,7 @@ public class SongsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AudioRepository repository = AudioRepository.getInstance(getContext());
+        AudioRepository repository = AudioRepository.getInstance();
         mAudios = (ArrayList<Audio>) repository.getAudios();
     }
 

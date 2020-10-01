@@ -21,6 +21,7 @@ import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 import org.mehdi.nezamipour.skybeat.models.Album;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.util.ArrayList;
 
@@ -46,7 +47,7 @@ public class AlbumsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAlbums = new ArrayList<>();
-        mRepository = AudioRepository.getInstance(getContext());
+        mRepository = AudioRepository.getInstance();
 
     }
 
@@ -61,7 +62,7 @@ public class AlbumsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-        mAlbums = mRepository.getAlbumList();
+        mAlbums = AudioUtils.loadAlbum(getContext());
         if (mAdapter == null) {
             mAdapter = new AlbumsAdapter(mAlbums);
             mRecyclerViewAlbum.setAdapter(mAdapter);
