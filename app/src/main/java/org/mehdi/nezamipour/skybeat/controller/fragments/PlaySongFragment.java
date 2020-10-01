@@ -26,12 +26,10 @@ import androidx.fragment.app.Fragment;
 
 import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.services.MediaPlayerService;
-import org.mehdi.nezamipour.skybeat.models.Album;
-import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
-import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -41,17 +39,9 @@ public class PlaySongFragment extends Fragment {
 
     public static final String ARG_AUDIO_INDEX = "org.mehdi.nezamipour.skybeat.audio";
     private static final String BUNDLE_SERVICE_STATE = "org.mehdi.nezamipour.skybeat.mServiceBound";
-    public static final String Broadcast_PLAY_NEW_AUDIO = "org.mehdi.nezamipour.skybeat.PlayNewAudio";
     public static final String EXTRA_AUDIO_INDEX = "audioIndex";
-    public static final String ARG_ALBUM = "album";
-    public static final String ARG_ARTIST = "artist";
-    public static final String BUNDLE_ALBUM = "album";
-    public static final String BUNDLE_ARTIST = "artist";
-    public static final String EXTRA_ALBUM = "album";
-    public static final String EXTRA_ARTIST = "artist";
 
 
-    private AudioRepository mRepository;
     private MediaPlayerService mService;
     private boolean mBoundState = false;
     private boolean mMusicPlay = true;
@@ -65,8 +55,6 @@ public class PlaySongFragment extends Fragment {
     private ImageButton mButtonPlayOrStop;
     private ImageButton mButtonNext;
     private ImageButton mButtonOrderedOfPlay;
-    private Album mAlbum;
-    private Artist mArtist;
 
 
     private int mAudioIndex;
@@ -81,6 +69,7 @@ public class PlaySongFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     public static PlaySongFragment newInstance(int audioIndex) {
         PlaySongFragment fragment = new PlaySongFragment();
         Bundle args = new Bundle();
@@ -89,30 +78,12 @@ public class PlaySongFragment extends Fragment {
         return fragment;
     }
 
-    public static PlaySongFragment newInstance(int audioIndex, Album album) {
-        PlaySongFragment fragment = new PlaySongFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_AUDIO_INDEX, audioIndex);
-        args.putSerializable(ARG_ALBUM, album);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static PlaySongFragment newInstance(int audioIndex, Artist artist) {
-        PlaySongFragment fragment = new PlaySongFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_AUDIO_INDEX, audioIndex);
-        args.putSerializable(ARG_ARTIST, artist);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     //Binding this Client to the AudioPlayer Service with bound service object in PlaySongFragment
     private ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             mService = binder.getService();
             mBoundState = true;
@@ -128,38 +99,23 @@ public class PlaySongFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRepository = AudioRepository.getInstance(getContext());
+        AudioRepository repository = AudioRepository.getInstance(getContext());
         if (getArguments() != null) {
             mAudioIndex = getArguments().getInt(ARG_AUDIO_INDEX);
-            mAlbum = (Album) getArguments().getSerializable(ARG_ALBUM);
-            mArtist = (Artist) getArguments().get(ARG_ARTIST);
         }
         if (savedInstanceState != null) {
             mBoundState = savedInstanceState.getBoolean(BUNDLE_SERVICE_STATE);
-            mAlbum = (Album) savedInstanceState.getSerializable(BUNDLE_ALBUM);
-            mArtist = (Artist) savedInstanceState.getSerializable(BUNDLE_ARTIST);
-
         }
 
-        if (mAlbum != null) {
-            mAudioList = AudioUtils.extractSongsOfAlbum(getContext(), mAlbum);
-            playAudio(mAudioIndex, mAlbum);
-        } else if (mArtist != null) {
-            mAudioList = AudioUtils.extractSongsOfArtist(getContext(), mArtist);
-            playAudio(mAudioIndex, mArtist);
-        } else {
-            mAudioList = mRepository.getAudioList();
-            playAudio(mAudioIndex);
-        }
+        mAudioList = (ArrayList<Audio>) repository.getAudios();
+        playAudio(mAudioIndex);
 
 
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_play_song, container, false);
     }
 
@@ -167,11 +123,7 @@ public class PlaySongFragment extends Fragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(BUNDLE_SERVICE_STATE, mBoundState);
-        savedInstanceState.putSerializable(BUNDLE_ALBUM, mAlbum);
-        savedInstanceState.putSerializable(BUNDLE_ARTIST, mArtist);
-
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -185,14 +137,14 @@ public class PlaySongFragment extends Fragment {
         musicRun = new Runnable() {
             @Override
             public void run() {
-                if (mBoundState == true) { // Check if service bounded
+                if (mBoundState) { // Check if service bounded
                     if (musicTotTime == null) { // Put data in it one time
                         musicTotTime = mService.getMediaDuration();
                         mSeekBarSongProgress.setMax(musicTotTime);
                     }
                     musicCurTime = mService.getMediaCurrentPos();
                     mSeekBarSongProgress.setProgress(musicCurTime);
-                } else if (!mBoundState) {
+                } else {
                     Log.v("Still waiting to bound", Boolean.toString(false));
                 }
                 musicMethodsHandler.postDelayed(this, 1000);
@@ -217,47 +169,11 @@ public class PlaySongFragment extends Fragment {
 
 
     private void playAudio(int audioIndex) {
-        //Check is service is active
         if (!mBoundState) {
             Intent playIntent = MediaPlayerService.newIntent(getContext());
-            playIntent.setAction(Broadcast_PLAY_NEW_AUDIO);
             playIntent.putExtra(EXTRA_AUDIO_INDEX, audioIndex);
-
             getActivity().startService(playIntent);
             getActivity().bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            getActivity().sendBroadcast(broadcastIntent);
-        }
-    }
-
-    private void playAudio(int audioIndex, Album album) {
-        //Check is service is active
-        if (!mBoundState) {
-            Intent playIntent = MediaPlayerService.newIntent(getContext());
-            playIntent.setAction(Broadcast_PLAY_NEW_AUDIO);
-            playIntent.putExtra(EXTRA_AUDIO_INDEX, audioIndex);
-            playIntent.putExtra(EXTRA_ALBUM, album);
-            getActivity().startService(playIntent);
-            getActivity().bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            getActivity().sendBroadcast(broadcastIntent);
-        }
-    }
-
-    private void playAudio(int audioIndex, Artist artist) {
-        //Check is service is active
-        if (!mBoundState) {
-            Intent playIntent = MediaPlayerService.newIntent(getContext());
-            playIntent.setAction(Broadcast_PLAY_NEW_AUDIO);
-            playIntent.putExtra(EXTRA_AUDIO_INDEX, audioIndex);
-            playIntent.putExtra(EXTRA_ARTIST, artist);
-            getActivity().startService(playIntent);
-            getActivity().bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            getActivity().sendBroadcast(broadcastIntent);
         }
     }
 
@@ -277,13 +193,10 @@ public class PlaySongFragment extends Fragment {
 
     private void initUI() {
         mAudio = mAudioList.get(mAudioIndex);
-
         mTextViewSongTitle.setText(mAudio.getTitle());
         mTextViewSongArtist.setText(mAudio.getArtist());
         setSongImage();
-
     }
-
 
     private void updateUI() {
         mAudio = mAudioList.get(mAudioIndex);
@@ -293,6 +206,18 @@ public class PlaySongFragment extends Fragment {
         setSongImage();
     }
 
+    private void setSongImage() {
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(mAudio.getData());
+        byte[] art = retriever.getEmbeddedPicture();
+
+        if (art != null) {
+            mCircleImageViewSongImage.setImageBitmap(BitmapFactory.decodeByteArray(art, 0, art.length));
+        } else {
+            mCircleImageViewSongImage.setImageResource(R.drawable.pic);
+        }
+    }
 
     private void setListeners() {
         mImageViewPlaySongMoreOption.setOnClickListener(new View.OnClickListener() {
@@ -304,7 +229,11 @@ public class PlaySongFragment extends Fragment {
         mButtonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.skipToPrevious();
+                try {
+                    mService.skipToPrevious();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if (mAudioIndex == 0) {
                     mAudioIndex = mAudioList.size() - 1;
                 } else {
@@ -316,7 +245,11 @@ public class PlaySongFragment extends Fragment {
         mButtonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.skipToNext();
+                try {
+                    mService.skipToNext();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if (mAudioIndex == mAudioList.size() - 1) {
                     mAudioIndex = 0;
                 } else {
@@ -360,16 +293,6 @@ public class PlaySongFragment extends Fragment {
 
     }
 
-    private void setSongImage() {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(mAudio.getData());
-        byte[] art = retriever.getEmbeddedPicture();
 
-        if (art != null) {
-            mCircleImageViewSongImage.setImageBitmap(BitmapFactory.decodeByteArray(art, 0, art.length));
-        } else {
-            mCircleImageViewSongImage.setImageResource(R.drawable.pic);
-        }
-    }
 
 }

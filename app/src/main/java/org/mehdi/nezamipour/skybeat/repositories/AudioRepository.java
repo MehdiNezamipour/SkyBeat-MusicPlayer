@@ -8,6 +8,7 @@ import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AudioRepository {
 
@@ -15,6 +16,7 @@ public class AudioRepository {
     private ArrayList<Audio> mAudioList;
     private ArrayList<Album> mAlbumList;
     private ArrayList<Artist> mArtistList;
+    private List<Audio> mAudios;
 
     private AudioRepository(Context context) {
         mAudioList = AudioUtils.loadAudio(context);
@@ -26,6 +28,14 @@ public class AudioRepository {
         if (sRepository == null)
             sRepository = new AudioRepository(context);
         return sRepository;
+    }
+
+    public List<Audio> getAudios() {
+        return mAudios;
+    }
+
+    public void setAudios(List<Audio> audios) {
+        mAudios = audios;
     }
 
     public ArrayList<Audio> getAudioList() {
@@ -45,9 +55,6 @@ public class AudioRepository {
         mAlbumList = AudioUtils.loadAlbum(context);
         mArtistList = AudioUtils.loadArtist(context);
     }
-
-
-
 
 
 }

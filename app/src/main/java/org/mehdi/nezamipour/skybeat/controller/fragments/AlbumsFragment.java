@@ -114,30 +114,31 @@ public class AlbumsFragment extends Fragment {
         private Album mAlbum;
         private MaterialCardView mCardViewAlbum;
         private TextView mTextViewAlbumTitle;
-        //private TextView mTextViewNumberOfSongs;
+        private TextView mTextViewNumberOfSongs;
         private ImageView mImageViewAlbumImage;
 
         public AlbumHolder(@NonNull View itemView) {
             super(itemView);
             mTextViewAlbumTitle = itemView.findViewById(R.id.textView_album_title);
-            //mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_songs_of_album);
+            mTextViewNumberOfSongs = itemView.findViewById(R.id.textView_songs_of_album);
             mImageViewAlbumImage = itemView.findViewById(R.id.imageView_album_image);
             mCardViewAlbum = itemView.findViewById(R.id.cardView_album);
 
-            mCardViewAlbum.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(SongsActivity.newIntent(getContext(), mAlbum));
-                }
-            });
         }
 
         public void bindAlbum(Album album) {
             mAlbum = album;
             mTextViewAlbumTitle.setText(album.getTitle());
-    /*        if (album.getSongsNumber() > 1)
+            mCardViewAlbum.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRepository.setAudios(mAlbum.getAudios(getContext()));
+                    startActivity(SongsActivity.newIntent(getContext()));
+                }
+            });
+            if (album.getSongsNumber() > 1)
                 mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs,
-                        String.valueOf(mAlbum.getSongsNumber())));*/
+                        String.valueOf(mAlbum.getSongsNumber())));
 
             Bitmap bm = BitmapFactory.decodeFile(mAlbum.getAlbumArt());
             if (bm != null)

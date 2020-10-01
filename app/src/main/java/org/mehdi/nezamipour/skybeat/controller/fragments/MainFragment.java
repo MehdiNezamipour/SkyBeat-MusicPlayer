@@ -23,6 +23,7 @@ import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.activities.AlbumsActivity;
 import org.mehdi.nezamipour.skybeat.controller.activities.ArtistsActivity;
 import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
+import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 public class MainFragment extends Fragment {
@@ -30,6 +31,7 @@ public class MainFragment extends Fragment {
     private Button mButtonOnlineMusicService;
     private RecyclerView mRecyclerView;
     private MenuAdapter mAdapter;
+    private AudioRepository mRepository;
 
     public MainFragment() {
         // Required empty public constructor
@@ -45,6 +47,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRepository = AudioRepository.getInstance(getContext());
     }
 
     @Override
@@ -144,6 +147,7 @@ public class MainFragment extends Fragment {
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            mRepository.setAudios(AudioUtils.loadAudio(getContext()));
                             startActivity(SongsActivity.newIntent(getContext()));
                         }
                     });

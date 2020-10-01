@@ -4,12 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 
-import androidx.annotation.RequiresApi;
-
-import org.mehdi.nezamipour.skybeat.controller.services.MediaPlayerService;
 import org.mehdi.nezamipour.skybeat.models.Album;
 import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
@@ -32,11 +28,11 @@ public class AudioUtils {
             audioList = new ArrayList<>();
             while (cursor.moveToNext()) {
 
-                String songId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
                 String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                String songId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
                 String albumId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
                 String artistId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID));
 
@@ -111,38 +107,28 @@ public class AudioUtils {
     }
 
 
-    public static ArrayList<Audio> extractSongsOfAlbum(Context context, Album album) {
+    public static ArrayList<Audio> extractSongsOfAlbum(Context context, String albumId) {
         AudioRepository audioRepository = AudioRepository.getInstance(context);
         ArrayList<Audio> songsOfAlbum = new ArrayList<>();
         for (Audio audio : audioRepository.getAudioList()) {
-            if (audio.getAlbumId().equals(album.getId())) {
+            if (audio.getAlbumId().equals(albumId)) {
                 songsOfAlbum.add(audio);
             }
         }
         return songsOfAlbum;
     }
 
-    public static ArrayList<Audio> extractSongsOfArtist(Context context, Artist artist) {
+    public static ArrayList<Audio> extractSongsOfArtist(Context context, String artistId) {
         AudioRepository audioRepository = AudioRepository.getInstance(context);
         ArrayList<Audio> songsOfArtist = new ArrayList<>();
         for (Audio audio : audioRepository.getAudioList()) {
-            if (audio.getArtistId().equals(artist.getArtistId())) {
+            if (audio.getArtistId().equals(artistId)) {
                 songsOfArtist.add(audio);
             }
         }
         return songsOfArtist;
     }
 
-    public static ArrayList<String> artistSongsData(Context context, Artist artist) {
-        AudioRepository audioRepository = AudioRepository.getInstance(context);
-        ArrayList<Audio> audios = audioRepository.getAudioList();
-        ArrayList<String> data = new ArrayList<>();
-        for (Audio audio : audios) {
-            if (audio.getArtistId().equals(artist.getArtistId()))
-                data.add(audio.getData());
-        }
-        return data;
-    }
 
 }
 

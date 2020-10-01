@@ -17,28 +17,19 @@ import com.google.android.material.card.MaterialCardView;
 
 import org.mehdi.nezamipour.skybeat.R;
 import org.mehdi.nezamipour.skybeat.controller.activities.PlaySongActivity;
-import org.mehdi.nezamipour.skybeat.models.Album;
-import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
-import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.util.ArrayList;
 
 
 public class SongsFragment extends Fragment {
 
-    public static final String ARG_ALBUM = "album";
-    public static final String ARG_ARTIST = "artist";
-    public static final String BUNDLE_ALBUM = "album";
-    public static final String BUNDLE_ARTIST = "artist";
-    private AudioRepository mRepository;
+
     private RecyclerView mRecyclerViewSong;
     private SongsAdapter mAdapter;
-
     private ArrayList<Audio> mAudios;
-    private Album mAlbum;
-    private Artist mArtist;
+
 
     public SongsFragment() {
         // Required empty public constructor
@@ -51,43 +42,11 @@ public class SongsFragment extends Fragment {
         return fragment;
     }
 
-    public static SongsFragment newInstance(Album album) {
-        SongsFragment fragment = new SongsFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_ALBUM, album);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static SongsFragment newInstance(Artist artist) {
-        SongsFragment fragment = new SongsFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_ARTIST, artist);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            mAlbum = (Album) savedInstanceState.getSerializable(BUNDLE_ALBUM);
-            mArtist = (Artist) savedInstanceState.getSerializable(BUNDLE_ARTIST);
-        }
-        if (getArguments() != null) {
-            mAlbum = (Album) getArguments().getSerializable(ARG_ALBUM);
-            mArtist = (Artist) getArguments().getSerializable(ARG_ARTIST);
-        }
-        mRepository = AudioRepository.getInstance(getContext());
-        mAudios = new ArrayList<>();
-        if (mAlbum != null) {
-            mAudios = AudioUtils.extractSongsOfAlbum(getContext(), mAlbum);
-        } else if (mArtist != null) {
-            mAudios = AudioUtils.extractSongsOfArtist(getContext(), mArtist);
-        } else {
-            mAudios = mRepository.getAudioList();
-        }
+        AudioRepository repository = AudioRepository.getInstance(getContext());
+        mAudios = (ArrayList<Audio>) repository.getAudios();
     }
 
 
@@ -102,7 +61,6 @@ public class SongsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-
 
         if (mAdapter == null) {
             mAdapter = new SongsAdapter(mAudios);
@@ -126,8 +84,7 @@ public class SongsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putSerializable(BUNDLE_ALBUM, mAlbum);
-        savedInstanceState.putSerializable(BUNDLE_ARTIST, mArtist);
+
     }
 
 
@@ -185,23 +142,19 @@ public class SongsFragment extends Fragment {
                     //TODO LATER : open a dialog for more option for song like share ,add to playlist and etc...
                 }
             });
-            mCardViewSong.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mAlbum != null)
-                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition(), mAlbum));
-                    else if (mArtist != null)
-                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition(), mArtist));
-                    else
-                        getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition()));
-                }
-            });
+
         }
 
         public void bindSong(Audio audio) {
             mAudio = audio;
             mTextViewSongTitle.setText(mAudio.getTitle());
             mTextViewSongArtist.setText(mAudio.getArtist());
+            mCardViewSong.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getActivity().startActivity(PlaySongActivity.newIntent(getContext(), getAdapterPosition()));
+                }
+            });
         }
     }
 

@@ -1,6 +1,11 @@
 package org.mehdi.nezamipour.skybeat.models;
 
+import android.content.Context;
+
+import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class Album implements Serializable {
 
@@ -10,14 +15,20 @@ public class Album implements Serializable {
     private String mArtist;
     private int mSongsNumber;
     private String mAlbumArt;
+    private List<Audio> mAudios;
 
 
-    public Album(String id, String title, String artist, int songsNumber,String albumArt) {
+    public Album(String id, String title, String artist, int songsNumber, String albumArt) {
         mId = id;
         mTitle = title;
         mArtist = artist;
         mSongsNumber = songsNumber;
         mAlbumArt = albumArt;
+    }
+
+    public List<Audio> getAudios(Context context) {
+        mAudios = AudioUtils.extractSongsOfAlbum(context, mId);
+        return mAudios;
     }
 
     public String getId() {
@@ -33,6 +44,7 @@ public class Album implements Serializable {
     }
 
     public int getSongsNumber() {
+        mSongsNumber = mAudios.size();
         return mSongsNumber;
     }
 

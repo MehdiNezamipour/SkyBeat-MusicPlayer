@@ -1,25 +1,18 @@
 package org.mehdi.nezamipour.skybeat.controller.services;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import org.mehdi.nezamipour.skybeat.controller.fragments.PlaySongFragment;
-import org.mehdi.nezamipour.skybeat.models.Album;
-import org.mehdi.nezamipour.skybeat.models.Artist;
 import org.mehdi.nezamipour.skybeat.models.Audio;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
-import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,11 +21,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
-    public static final String EXTRA_ALBUM = " org.mehdi.nezamipour.skybeat.album";
-    public static final String EXTRA_ARTIST = " org.mehdi.nezamipour.skybeat.artist";
+
     public static final String EXTRA_AUDIO_INDEX = "audioIndex";
 
-    private AudioRepository mRepository;
     private final IBinder mBinder = new LocalBinder();
 
     private int mAudioIndex = -1;
@@ -41,28 +32,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private MediaPlayer mMediaPlayer = new MediaPlayer();
     private AudioManager mAudioManager;
     private Audio mActiveAudio;
-    private Album mAlbum;
-    private Artist mArtist;
 
 
     public static Intent newIntent(Context context) {
         return new Intent(context, MediaPlayerService.class);
     }
 
-    public static Intent newIntent(Context context, Album album) {
-        Intent intent = new Intent(context, MediaPlayerService.class);
-        intent.putExtra("album", album);
-        return intent;
-    }
-
-    public static Intent newIntent(Context context, Artist artist) {
-        Intent intent = new Intent(context, MediaPlayerService.class);
-        intent.putExtra("artist", artist);
-        return intent;
-    }
-
-
     public MediaPlayerService() {
+        // Required empty public constructor
     }
 
 
@@ -75,32 +52,21 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mRepository = AudioRepository.getInstance(getApplicationContext());
-        mAudioList = mRepository.getAudioList();
+        AudioRepository repository = AudioRepository.getInstance(getApplicationContext());
+        mAudioList = repository.getAudioList();
+        mAudioIndex = intent.getIntExtra(EXTRA_AUDIO_INDEX, -1);
+        mAudioList = (ArrayList<Audio>) repository.getAudios();
 
 
         try {
-            mAudioIndex = intent.getIntExtra(EXTRA_AUDIO_INDEX, -1);
-            mAlbum = (Album) intent.getSerializableExtra(EXTRA_ALBUM);
-            mArtist = (Artist) intent.getSerializableExtra(EXTRA_ARTIST);
-            if (mAlbum != null)
-                mAudioList = AudioUtils.extractSongsOfAlbum(getApplicationContext(), mAlbum);
-            else if (mArtist != null) {
-                mAudioList = AudioUtils.extractSongsOfArtist(getApplicationContext(), mArtist);
-            } else
-                mAudioList = mRepository.getAudioList();
 
             if (mAudioIndex != -1 && mAudioIndex < mAudioList.size()) {
-
                 mActiveAudio = mAudioList.get(mAudioIndex);
-                if (mMediaPlayer.isPlaying()){
-                    mMediaPlayer.stop();
-                }
-                    initMediaPlayer();
+                initMediaPlayer();
             } else {
                 stopSelf();
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IOException e) {
             stopSelf();
         }
         //Request audio focus
@@ -121,53 +87,44 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         removeAudioFocus();
     }
 
-    private void initMediaPlayer() {
+    private void initMediaPlayer() throws IOException {
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnBufferingUpdateListener(this);
 
         //Reset so that the MediaPlayer is not pointing to another data source
+        stopMedia();
         mMediaPlayer.reset();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            // Set the data source to the mediaFile location
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
             mMediaPlayer.setDataSource(mActiveAudio.getData());
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
         }
-        mMediaPlayer.prepareAsync();
+        mMediaPlayer.prepare();
+        mMediaPlayer.start();
     }
 
 
     //Handle actions of media player public methods that client use this
-    public void skipToNext() {
+    public void skipToNext() throws IOException {
         if (mAudioIndex == mAudioList.size() - 1) {
             mAudioIndex = 0;
             mActiveAudio = mAudioList.get(mAudioIndex);
-
         } else {
             mActiveAudio = mAudioList.get(++mAudioIndex);
         }
-
-        stopMedia();
-        mMediaPlayer.reset();
         initMediaPlayer();
     }
 
-    public void skipToPrevious() {
+    public void skipToPrevious() throws IOException {
         if (mAudioIndex == 0) {
             mAudioIndex = mAudioList.size() - 1;
             mActiveAudio = mAudioList.get(mAudioIndex);
         } else {
             mActiveAudio = mAudioList.get(--mAudioIndex);
         }
-
-        stopMedia();
-        mMediaPlayer.reset();
         initMediaPlayer();
     }
 
@@ -219,9 +176,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
-                if (mMediaPlayer == null)
-                    initMediaPlayer();
-                else if (!mMediaPlayer.isPlaying())
+                if (mMediaPlayer == null) {
+                    try {
+                        initMediaPlayer();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (!mMediaPlayer.isPlaying())
                     mMediaPlayer.start();
                 mMediaPlayer.setVolume(1.0f, 1.0f);
                 break;
@@ -244,6 +205,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 // at an attenuated level
                 if (mMediaPlayer.isPlaying())
                     mMediaPlayer.setVolume(0.1f, 0.1f);
+                break;
+            default:
                 break;
         }
     }
@@ -270,7 +233,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        skipToNext();
+        try {
+            skipToNext();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
