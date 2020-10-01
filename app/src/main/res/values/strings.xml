@@ -14,6 +14,7 @@
     <string name="feedback">Feedback</string>
     <string name="about">About</string>
     <string name="_1_song">1 song</string>
+    <string name="readExternalPermission">This app needs access to your external storage.</string>
 
     <string name="numberOfSongs">%s songs</string>
 </resources>

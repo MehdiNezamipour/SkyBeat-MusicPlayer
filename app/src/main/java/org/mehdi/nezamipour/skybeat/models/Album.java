@@ -43,8 +43,8 @@ public class Album implements Serializable {
         return mArtist;
     }
 
-    public int getSongsNumber() {
-        mSongsNumber = mAudios.size();
+    public int getSongsNumber(Context context) {
+        mSongsNumber = AudioUtils.extractSongsOfAlbum(context, mId).size();
         return mSongsNumber;
     }
 

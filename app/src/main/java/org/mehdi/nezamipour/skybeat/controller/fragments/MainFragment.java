@@ -1,5 +1,7 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
+import android.Manifest;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -26,7 +28,14 @@ import org.mehdi.nezamipour.skybeat.controller.activities.SongsActivity;
 import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 import org.mehdi.nezamipour.skybeat.utils.AudioUtils;
 
-public class MainFragment extends Fragment {
+import java.util.List;
+
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MainFragment extends Fragment implements EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+
+    private static final int READ_EXTERNAL_PER = 111;
 
     private Button mButtonOnlineMusicService;
     private RecyclerView mRecyclerView;
@@ -86,6 +95,70 @@ public class MainFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recyclerView_main_menu);
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    @Override
+    public void onRationaleAccepted(int requestCode) {
+
+    }
+
+    @Override
+    public void onRationaleDenied(int requestCode) {
+    }
+
+
+    public boolean hasReadExternalPermission() {
+        return EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+
+    private void songsClickTask() {
+        if (hasReadExternalPermission()) {
+            mRepository.setAudios(AudioUtils.loadAudio(getContext()));
+            startActivity(SongsActivity.newIntent(getContext()));
+        } else
+            requestReadExternalPermission();
+    }
+
+    private void artistClickTask() {
+        if (hasReadExternalPermission())
+            startActivity(ArtistsActivity.newIntent(getContext()));
+        requestReadExternalPermission();
+    }
+
+
+    private void albumClickTask() {
+        if (hasReadExternalPermission())
+            startActivity(AlbumsActivity.newIntent(getContext()));
+        requestReadExternalPermission();
+    }
+
+    private void requestReadExternalPermission() {
+        EasyPermissions.requestPermissions(
+                this,
+                getString(R.string.readExternalPermission),
+                READ_EXTERNAL_PER,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
 
     public class MenuAdapter extends RecyclerView.Adapter<itemHolder> {
 
@@ -147,8 +220,7 @@ public class MainFragment extends Fragment {
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mRepository.setAudios(AudioUtils.loadAudio(getContext()));
-                            startActivity(SongsActivity.newIntent(getContext()));
+                            songsClickTask();
                         }
                     });
                     break;
@@ -159,7 +231,7 @@ public class MainFragment extends Fragment {
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivity(AlbumsActivity.newIntent(getContext()));
+                            albumClickTask();
                         }
                     });
                     break;
@@ -170,7 +242,7 @@ public class MainFragment extends Fragment {
                     mCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivity(ArtistsActivity.newIntent(getContext()));
+                            artistClickTask();
                         }
                     });
                     break;
@@ -223,5 +295,6 @@ public class MainFragment extends Fragment {
             }
         }
     }
+
 
 }

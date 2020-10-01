@@ -1,5 +1,6 @@
 package org.mehdi.nezamipour.skybeat.controller.fragments;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,8 +32,10 @@ import org.mehdi.nezamipour.skybeat.repositories.AudioRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class PlaySongFragment extends Fragment {
@@ -292,7 +295,6 @@ public class PlaySongFragment extends Fragment {
         });
 
     }
-
 
 
 }

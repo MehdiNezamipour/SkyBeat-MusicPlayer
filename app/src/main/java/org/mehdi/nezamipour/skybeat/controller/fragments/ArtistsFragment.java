@@ -137,9 +137,10 @@ public class ArtistsFragment extends Fragment {
 
         public void bindArtist(Artist artist) {
             mArtist = artist;
+            int number = artist.getNumberOfSongs(getContext());
             mTextViewArtistName.setText(artist.getName());
-            if (artist.getNumberOfSongs() > 1)
-                mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs, String.valueOf(artist.getNumberOfSongs())));
+            if (number > 1)
+                mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs, String.valueOf(number)));
             //TODO
             mImageViewArtistImage.setImageResource(R.drawable.no_image_2);
         }

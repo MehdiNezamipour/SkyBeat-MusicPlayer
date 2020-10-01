@@ -34,8 +34,8 @@ public class Artist implements Serializable {
         return mName;
     }
 
-    public int getNumberOfSongs() {
-        mNumberOfSongs = mAudios.size();
+    public int getNumberOfSongs(Context context) {
+        mNumberOfSongs = AudioUtils.extractSongsOfArtist(context, mArtistId).size();
         return mNumberOfSongs;
     }
 

@@ -136,9 +136,10 @@ public class AlbumsFragment extends Fragment {
                     startActivity(SongsActivity.newIntent(getContext()));
                 }
             });
-            if (album.getSongsNumber() > 1)
+            int number = album.getSongsNumber(getContext());
+            if (number > 1)
                 mTextViewNumberOfSongs.setText(getString(R.string.numberOfSongs,
-                        String.valueOf(mAlbum.getSongsNumber())));
+                        String.valueOf(number)));
 
             Bitmap bm = BitmapFactory.decodeFile(mAlbum.getAlbumArt());
             if (bm != null)

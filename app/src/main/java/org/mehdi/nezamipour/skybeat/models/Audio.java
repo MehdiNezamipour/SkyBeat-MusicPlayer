@@ -1,7 +1,5 @@
 package org.mehdi.nezamipour.skybeat.models;
 
-import org.mehdi.nezamipour.skybeat.enums.SongState;
-
 import java.io.Serializable;
 
 public class Audio implements Serializable {
@@ -10,7 +8,6 @@ public class Audio implements Serializable {
     private String mAlbum;
     private String mArtist;
     private String mData;
-    private SongState mSongState;
     private String mSongId;
     private String mAlbumId;
     private String mArtistId;
@@ -39,10 +36,6 @@ public class Audio implements Serializable {
 
     public String getData() {
         return mData;
-    }
-
-    public SongState getSongState() {
-        return mSongState;
     }
 
     public String getSongId() {
