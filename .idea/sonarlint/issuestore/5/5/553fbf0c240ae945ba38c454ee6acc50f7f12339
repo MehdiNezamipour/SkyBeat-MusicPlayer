@@ -1,0 +1,11 @@
+
+W
+java:S1874{":Remove this use of "setAudioStreamType"; it is deprecated.(¾ÎÉ8…¥ã™Î.
+\
+java:S1874…"9Remove this use of "requestAudioFocus"; it is deprecated.(±ëáúøÿÿÿÿ8ê—ÖÎ.
+U
+java:S1135”"2Complete the task associated to this TODO comment.(Î‹Şçùÿÿÿÿ8ê—ÖÎ.
+d
+java:S1126†"AReplace this if-then-else statement by a single return statement.(ä¼®øÿÿÿÿÿ8ê—ÖÎ.
+W
+java:S1874"9Remove this use of "abandonAudioFocus"; it is deprecated.(©´œï8ê—ÖÎ.

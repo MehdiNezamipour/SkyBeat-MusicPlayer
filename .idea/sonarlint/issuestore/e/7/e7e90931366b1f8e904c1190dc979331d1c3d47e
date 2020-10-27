@@ -1,0 +1,18 @@
+
+r
+java:S2095è"TUse try-with-resources or close this "MediaMetadataRetriever" in a "finally" clause.(øæ‚Õ8°¿¬¡Î.
+Ÿ
+java:S1186°"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‰ÁÕ–8°¿¬¡Î.
+V
+java:S1874¹"3Remove this use of "getDrawable"; it is deprecated.(¢ëˆ‚ÿÿÿÿÿ8°¿¬¡Î.
+V
+java:S1874º"3Remove this use of "getDrawable"; it is deprecated.(•Í·Ãùÿÿÿÿ8°¿¬¡Î.
+Q
+java:S1874q"/Remove this use of "Handler"; it is deprecated.(˜šó¸üÿÿÿÿ8¨ö­¡Î.
+Q
+java:S1874»"3Remove this use of "getDrawable"; it is deprecated.(‡§Ç›8°¿¬¡Î.
+P
+java:S1135÷"2Complete the task associated to this TODO comment.(ß„üì8°¿¬¡Î.
+Y	java:S125”"<This block of commented-out lines of code should be removed.(ã†È¾8‰þð¡Î.
+¤
+java:S1186«"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ñ®çâùÿÿÿÿ8°¿¬¡Î.

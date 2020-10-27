@@ -24,10 +24,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
-
     public static final String EXTRA_AUDIO_INDEX = "audioIndex";
 
     private final IBinder mBinder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        public MediaPlayerService getService() {
+            return MediaPlayerService.this;
+        }
+
+    }
 
     // default order
     private OrderOfPlay mOrderOfPlay = OrderOfPlay.REPEAT_LIST;
@@ -41,6 +47,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     public int getAudioIndex() {
         return mAudioIndex;
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
     }
 
     public static Intent newIntent(Context context) {
@@ -72,7 +82,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mAudioList = AudioUtils.loadAudio(getApplicationContext());
         mAudioIndex = intent.getIntExtra(EXTRA_AUDIO_INDEX, -1);
         mAudioList = (ArrayList<Audio>) repository.getAudios();
-
 
         try {
 
@@ -124,9 +133,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
 
     private void randomAudio() {
-        int random = new Random().nextInt((mAudioList.size() - 1) + 1);
+        int random = new Random().nextInt((mAudioList.size()));
         while (random == mAudioIndex) {
-            random = new Random().nextInt((mAudioList.size() - 1) + 1);
+            random = new Random().nextInt((mAudioList.size()));
         }
         mAudioIndex = random;
         mActiveAudio = mAudioList.get(random);
@@ -271,23 +280,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCompletion(MediaPlayer mp) {
         try {
             skipToNext();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         playMedia();
-    }
-
-    public class LocalBinder extends Binder {
-        public MediaPlayerService getService() {
-            return MediaPlayerService.this;
-        }
-
     }
 
 

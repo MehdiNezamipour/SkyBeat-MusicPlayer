@@ -41,6 +41,7 @@ public class PlaySongFragment extends Fragment {
     public static final String ARG_AUDIO_INDEX = "org.mehdi.nezamipour.skybeat.audio";
     private static final String BUNDLE_SERVICE_STATE = "org.mehdi.nezamipour.skybeat.mServiceBound";
     public static final String EXTRA_AUDIO_INDEX = "audioIndex";
+    public static final String BUNDLE_AUDIO_INDEX = "audioIndex";
 
 
     private MediaPlayerService mService;
@@ -61,10 +62,8 @@ public class PlaySongFragment extends Fragment {
     private int mAudioIndex;
     private ArrayList<Audio> mAudioList;
     private Audio mAudio;
-    private Handler musicMethodsHandler;
-    private Runnable musicRun;
-    private Integer musicTotTime;
-    private Integer musicCurTime;
+    private Handler mSeekBarHandler;
+    private Integer mAudioDuration;
 
     public PlaySongFragment() {
         // Required empty public constructor
@@ -105,11 +104,13 @@ public class PlaySongFragment extends Fragment {
         }
         if (savedInstanceState != null) {
             mBoundState = savedInstanceState.getBoolean(BUNDLE_SERVICE_STATE);
+            mAudioIndex = savedInstanceState.getInt(BUNDLE_AUDIO_INDEX);
         }
 
         mAudioList = (ArrayList<Audio>) repository.getAudios();
-        playAudio(mAudioIndex);
 
+        //Music Handler for methods
+        mSeekBarHandler = new Handler();
 
     }
 
@@ -123,46 +124,28 @@ public class PlaySongFragment extends Fragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(BUNDLE_SERVICE_STATE, mBoundState);
+        savedInstanceState.putInt(BUNDLE_AUDIO_INDEX, mAudioIndex);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
+        playAudio(mAudioIndex);
+
         initUI();
-        mSeekBarSongProgress.setProgress(0);
-
-        //Music Handler for methods
-        musicMethodsHandler = new Handler();
-        musicRun = new Runnable() {
-            @Override
-            public void run() {
-                if (mBoundState) { // Check if service bounded
-                    if (musicTotTime == null) { // Put data in it one time
-                        musicTotTime = mService.getMediaDuration();
-                        mSeekBarSongProgress.setMax(musicTotTime);
-                    }
-                    musicCurTime = mService.getMediaCurrentPos();
-                    mSeekBarSongProgress.setProgress(musicCurTime);
-                } else {
-                    Log.v("Still waiting to bound", Boolean.toString(false));
-                }
-                musicMethodsHandler.postDelayed(this, 1000);
-            }
-        };
-
-        musicMethodsHandler.postDelayed(musicRun, 1000);
 
 
         setListeners();
     }
 
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (mBoundState) {
-            getActivity().unbindService(mServiceConnection);
+            //getActivity().unbindService(mServiceConnection);
             //but not service self stop because we want to play song when fragment destroy
         }
     }
@@ -174,6 +157,25 @@ public class PlaySongFragment extends Fragment {
             playIntent.putExtra(EXTRA_AUDIO_INDEX, audioIndex);
             getActivity().startService(playIntent);
             getActivity().bindService(playIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+            mSeekBarSongProgress.setProgress(0);
+            // Check if service bounded
+            // Put data in it one time
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (mBoundState) { // Check if service bounded
+                        mAudioDuration = mService.getMediaDuration();
+                        mSeekBarSongProgress.setMax(mAudioDuration);
+                        mSeekBarSongProgress.setProgress(mService.getMediaCurrentPos());
+
+                    } else {
+                        Log.v("Still waiting to bound", Boolean.toString(false));
+                    }
+                    mSeekBarHandler.postDelayed(this, 100);
+                }
+            };
+            mSeekBarHandler.postDelayed(runnable, 100);
         }
     }
 
@@ -204,6 +206,25 @@ public class PlaySongFragment extends Fragment {
         mTextViewSongArtist.setText(mAudio.getArtist());
         mButtonPlayOrStop.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_pause));
         setSongImage();
+
+        mSeekBarSongProgress.setProgress(0);
+        // Check if service bounded
+        // Put data in it one time
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mBoundState) { // Check if service bounded
+                    mAudioDuration = mService.getMediaDuration();
+                    mSeekBarSongProgress.setMax(mAudioDuration);
+                    mSeekBarSongProgress.setProgress(mService.getMediaCurrentPos());
+
+                } else {
+                    Log.v("Still waiting to bound", Boolean.toString(false));
+                }
+                mSeekBarHandler.postDelayed(this, 100);
+            }
+        };
+        mSeekBarHandler.postDelayed(runnable, 100);
     }
 
     private void setSongImage() {
@@ -307,6 +328,5 @@ public class PlaySongFragment extends Fragment {
         });
 
     }
-
 
 }

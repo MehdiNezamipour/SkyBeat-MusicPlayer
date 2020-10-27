@@ -1,0 +1,73 @@
+
+[
+java:S3252V"@Use static access with "android.provider.BaseColumns" for "_ID".(ÒôÏüÿÿÿÿÿ
+G
+java:S18749"1Remove this use of "ALBUM_ART"; it is deprecated.(çªÓô
+{
+java:S3252a"`Use static access with "android.provider.MediaStore$Audio$ArtistColumns" for "NUMBER_OF_TRACKS".(îÆ€ßùÿÿÿÿ
+o
+java:S3252B"TUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ALBUM".(·ˆê£şÿÿÿÿ
+q
+java:S3252Z"VUse static access with "android.provider.MediaStore$Audio$ArtistColumns" for "ARTIST".(†ßŸûøÿÿÿÿ
+k
+java:S3252W"VUse static access with "android.provider.MediaStore$Audio$ArtistColumns" for "ARTIST".(Ãß®A
+G
+java:S1874",Remove this use of "DATA"; it is deprecated.(ó£ëÖüÿÿÿÿ
+[
+java:S3252_"@Use static access with "android.provider.BaseColumns" for "_ID".(öµ€øÿÿÿÿ
+t
+java:S3252E"^Use static access with "android.provider.MediaStore$Audio$AlbumColumns" for "NUMBER_OF_SONGS".(åïÇú
+s
+java:S3252D"XUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ALBUM_ART".(Ší¦şÿÿÿÿ
+V
+java:S32525"@Use static access with "android.provider.BaseColumns" for "_ID".(á—˜
+’
+java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(·ƒâ¤ıÿÿÿÿ8‡¨œ˜Î.
+h
+java:S3252"MUse static access with "android.provider.MediaStore$MediaColumns" for "DATA".(ó£ëÖüÿÿÿÿ
+s
+java:S3252$"XUse static access with "android.provider.MediaStore$Audio$AudioColumns" for "ARTIST_ID".(»¾¦—ùÿÿÿÿ
+‹
+java:S1319w"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¨÷Ÿıÿÿÿÿ
+n
+java:S32529"XUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ALBUM_ART".(çªÓô
+[
+java:S3252""@Use static access with "android.provider.BaseColumns" for "_ID".(óÿ¦÷şÿÿÿÿ
+q
+java:S3252`"VUse static access with "android.provider.MediaStore$Audio$ArtistColumns" for "ARTIST".(ø³ì½şÿÿÿÿ
+y
+java:S32528"^Use static access with "android.provider.MediaStore$Audio$AlbumColumns" for "NUMBER_OF_SONGS".(‹’ Óûÿÿÿÿ
+‹
+java:S1319P"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(øªµïüÿÿÿÿ
+j
+java:S32526"TUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ALBUM".(œ’‡×
+i
+java:S3252"NUse static access with "android.provider.MediaStore$MediaColumns" for "TITLE".(Õ½Ä§øÿÿÿÿ
+{
+java:S3252X"`Use static access with "android.provider.MediaStore$Audio$ArtistColumns" for "NUMBER_OF_TRACKS".(âÙÙûÿÿÿÿÿ
+i
+java:S3252 "NUse static access with "android.provider.MediaStore$MediaColumns" for "ALBUM".(û¨­¾şÿÿÿÿ
+t
+java:S3252#"WUse static access with "android.provider.MediaStore$Audio$AudioColumns" for "ALBUM_ID".(øÃ²8˜ğôÍ.
+k
+java:S3252C"UUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ARTIST".(™ââ×
+‹
+java:S1319/"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(æâÆóøÿÿÿÿ
+L
+java:S1874D"1Remove this use of "ALBUM_ART"; it is deprecated.(Ší¦şÿÿÿÿ
+j
+java:S3252<"TUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ALBUM".(™’İ­
+c
+java:S3252"NUse static access with "android.provider.MediaStore$MediaColumns" for "TITLE".(éü ;
+m
+java:S3252"WUse static access with "android.provider.MediaStore$Audio$AudioColumns" for "IS_MUSIC".(šÒÙ
+p
+java:S32527"UUse static access with "android.provider.MediaStore$Audio$AlbumColumns" for "ARTIST".(¨¼¾Áùÿÿÿÿ
+U
+java:S1118":Add a private constructor to hide the implicit public one.(‹˜‹²üÿÿÿÿ
+‹
+java:S1319m"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¬‚¤ÿÿÿÿÿ
+d
+java:S3252!"OUse static access with "android.provider.MediaStore$MediaColumns" for "ARTIST".(Ûé1
+V
+java:S3252A"@Use static access with "android.provider.BaseColumns" for "_ID".(™ÀÑ˜

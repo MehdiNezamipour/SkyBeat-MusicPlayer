@@ -1,0 +1,9 @@
+
+t
+java:S1488"^Immediately return this expression instead of assigning it to the temporary variable "intent".(ß°ÑÙ
+c
+java:S1128	"FRemove this unused import 'org.mehdi.nezamipour.skybeat.models.Album'.(äò»ò8ž£µ˜Î.
+R	java:S110"=This class has 10 parents which is greater than 5 authorized.(·ç¢£
+i
+java:S1128
+"GRemove this unused import 'org.mehdi.nezamipour.skybeat.models.Artist'.(Ú¸êšüÿÿÿÿ8ž£µ˜Î.
