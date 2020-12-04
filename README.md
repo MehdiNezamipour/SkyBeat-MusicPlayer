@@ -33,6 +33,5 @@ Simple Music Player for android devices to Learn Work with Services , Notificati
  ## External Libraries
  - Material
  - Piccasso
- - Room
  - Easy permissions
 
